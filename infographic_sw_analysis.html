@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สรุปผลการสอบเข้า ม.1</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <style>
+    body { font-family: 'Kanit', sans-serif; }
+    .styled-table { border-collapse: collapse; width: 100%; }
+    .styled-table th, .styled-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    .styled-table th { background-color: #f4f4f4; }
+    .kpi-card { background:white; box-shadow:0 2px 8px rgba(0,0,0,0.1); border-radius:1rem; padding:1rem; text-align:center; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Navbar -->
+  <nav class="sticky top-0 bg-white shadow z-50 p-3 flex gap-6 justify-center">
+    <a href="#ep-analysis" class="hover:underline">EP</a>
+    <a href="#gm-analysis" class="hover:underline">GM</a>
+    <a href="#smte-analysis" class="hover:underline">SMTE</a>
+    <a href="#regular-analysis" class="hover:underline">ห้องปกติ</a>
+  </nav>
+
+  <!-- Header -->
+  <header class="p-6 text-center">
+    <h1 class="text-3xl font-bold mb-2">📊 สรุปผลการสอบเข้า ม.1</h1>
+    <p class="text-gray-600">ปีการศึกษา 2567 - 2568</p>
+  </header>
+
+  <!-- KPI Summary -->
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 mb-8">
+    <div class="kpi-card"><p class="text-2xl font-bold">680</p><p>รับรวม</p></div>
+    <div class="kpi-card"><p class="text-2xl font-bold">185</p><p>คะแนนสูงสุด</p></div>
+    <div class="kpi-card"><p class="text-2xl font-bold">125</p><p>คะแนนต่ำสุด</p></div>
+    <div class="kpi-card"><p class="text-2xl font-bold">142</p><p>ค่าเฉลี่ยสูงสุด</p></div>
+  </section>
+
+  <!-- EP -->
+  <section id="ep-analysis" class="p-6">
+    <h2 class="text-xl font-semibold mb-2">English Program (EP)</h2>
+    <canvas id="epScoresChart" height="120"></canvas>
+  </section>
+
+  <!-- GM -->
+  <section id="gm-analysis" class="p-6">
+    <h2 class="text-xl font-semibold mb-2">Gifted Math (GM)</h2>
+    <canvas id="gmScoresChart" height="120"></canvas>
+  </section>
+
+  <!-- SMTE -->
+  <section id="smte-analysis" class="p-6">
+    <h2 class="text-xl font-semibold mb-2">SMTE</h2>
+    <canvas id="smteScoresChart" height="120"></canvas>
+  </section>
+
+  <!-- Regular -->
+  <section id="regular-analysis" class="p-6">
+    <h2 class="text-xl font-semibold mb-2">ห้องปกติ</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold mb-2">ในเขต</h3>
+        <canvas id="regularInChart" height="120"></canvas>
+      </div>
+      <div>
+        <h3 class="font-semibold mb-2">นอกเขต</h3>
+        <canvas id="regularOutChart" height="120"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script -->
+  <script>
+    Chart.register(ChartDataLabels);
+
+    function createChart(ctx, labels, datasets) {
+      return new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            datalabels: { color: '#333', anchor: 'end', align: 'top' }
+          },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    const yearLabels = ['2567', '2568'];
+
+    createChart(document.getElementById('epScoresChart'), yearLabels, [
+      { label: 'ค่าเฉลี่ย', data: [128, 142], backgroundColor: '#665191' },
+      { label: 'ต่ำสุด', data: [110, 125], backgroundColor: '#d45087' },
+      { label: 'สูงสุด', data: [171, 185], backgroundColor: '#ff7c43' }
+    ]);
+
+    createChart(document.getElementById('gmScoresChart'), yearLabels, [
+      { label: 'ค่าเฉลี่ย', data: [120, 135], backgroundColor: '#2a9d8f' },
+      { label: 'ต่ำสุด', data: [100, 115], backgroundColor: '#e76f51' },
+      { label: 'สูงสุด', data: [160, 175], backgroundColor: '#f4a261' }
+    ]);
+
+    createChart(document.getElementById('smteScoresChart'), yearLabels, [
+      { label: 'ค่าเฉลี่ย', data: [115, 130], backgroundColor: '#1d3557' },
+      { label: 'ต่ำสุด', data: [95, 110], backgroundColor: '#e63946' },
+      { label: 'สูงสุด', data: [155, 170], backgroundColor: '#a8dadc' }
+    ]);
+
+    createChart(document.getElementById('regularInChart'), yearLabels, [
+      { label: 'ค่าเฉลี่ย', data: [90, 105], backgroundColor: '#118ab2' },
+      { label: 'ต่ำสุด', data: [60, 75], backgroundColor: '#ef476f' },
+      { label: 'สูงสุด', data: [130, 145], backgroundColor: '#ffd166' }
+    ]);
+
+    createChart(document.getElementById('regularOutChart'), yearLabels, [
+      { label: 'ค่าเฉลี่ย', data: [85, 95], backgroundColor: '#073b4c' },
+      { label: 'ต่ำสุด', data: [55, 65], backgroundColor: '#ef476f' },
+      { label: 'สูงสุด', data: [120, 135], backgroundColor: '#06d6a0' }
+    ]);
+  </script>
+
+</body>
+</html>
