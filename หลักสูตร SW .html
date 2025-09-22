@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic: ข้อมูลหลักสูตรและจำนวนรับนักเรียน ม.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #F8F8FF;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 650px; /* Increased max-width */
+            height: 60vh;      /* Increased height */
+            max-height: 500px; /* Increased max-height */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 65vh;
+                max-height: 550px;
+            }
+        }
+        .tab-button.active {
+            background-color: #ffffff;
+            color: #118AB2;
+            font-weight: 700;
+            border-bottom: 3px solid #118AB2;
+        }
+        .sub-tab-button.active {
+            background-color: #118AB2;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+        .tab-content, .sub-tab-content {
+            display: none;
+        }
+        .tab-content.active, .sub-tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="text-[#073B4C]">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <header class="text-center my-8 md:my-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-[#118AB2]">ข้อมูลการรับนักเรียนชั้น ม.1</h1>
+            <p class="text-lg md:text-xl text-slate-600 mt-2">ภาพรวมจำนวนและสัดส่วนนักเรียนในแต่ละแผนการเรียน</p>
+        </header>
+
+        <!-- Main Tab Navigation -->
+        <div class="flex justify-center mb-8 bg-gray-100 rounded-xl p-1">
+            <button class="tab-button active py-3 px-4 text-center text-lg md:text-xl font-semibold text-gray-600 hover:text-[#118AB2] transition-all duration-300 rounded-lg focus:outline-none w-1/2" data-tab="overview">
+                ภาพรวมหลักสูตร
+            </button>
+            <button class="tab-button py-3 px-4 text-center text-lg md:text-xl font-semibold text-gray-600 hover:text-[#118AB2] transition-all duration-300 rounded-lg focus:outline-none w-1/2" data-tab="details">
+                รายละเอียดหลักสูตร
+            </button>
+        </div>
+
+        <!-- Main Tab Content - ภาพรวมหลักสูตร -->
+        <div id="overview" class="tab-content active">
+            <section class="card text-center mb-8">
+                <h2 class="text-2xl font-bold text-[#FF6B6B] mb-2">จำนวนนักเรียนที่รับทั้งหมด</h2>
+                <p class="text-7xl md:text-8xl font-extrabold text-[#073B4C]">522</p>
+                <p class="text-2xl font-bold text-[#FF6B6B]">คน</p>
+            </section>
+
+            <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <article class="card">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 text-[#118AB2]">สัดส่วนนักเรียนแต่ละหลักสูตร</h2>
+                    <p class="text-center text-slate-600 mb-6">แสดงสัดส่วนโดยรวมของนักเรียนในแต่ละหลักสูตรที่เปิดรับ</p>
+                    <div class="chart-container">
+                        <canvas id="programDistributionChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 text-[#118AB2]">เปรียบเทียบจำนวนนักเรียน</h2>
+                    <p class="text-center text-slate-600 mb-6">กราฟนี้เปรียบเทียบจำนวนนักเรียนที่รับในแต่ละหลักสูตรอย่างชัดเจน</p>
+                    <div class="chart-container">
+                        <canvas id="programComparisonChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="lg:col-span-2 card">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 text-[#118AB2]">สัดส่วนการรับนักเรียนหลักสูตรปกติ</h2>
+                    <p class="text-center text-slate-600 mb-6">ข้อมูลเชิงลึกของนักเรียนในหลักสูตรปกติ (ทั่วไป) แยกตามประเภทโควตา</p>
+                    <div class="chart-container">
+                        <canvas id="normalProgramBreakdownChart"></canvas>
+                    </div>
+                </article>
+
+                <article class="lg:col-span-2 card">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 text-[#118AB2]">สรุปจำนวนรับนักเรียนแต่ละหลักสูตร</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-max text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#073B4C] text-white">
+                                    <th class="p-4 font-bold rounded-tl-lg">หลักสูตร</th>
+                                    <th class="p-4 font-bold text-center">ห้องเรียน</th>
+                                    <th class="p-4 font-bold text-center">จำนวน (คน/ห้อง)</th>
+                                    <th class="p-4 font-bold text-center rounded-tr-lg">ยอดรวม (คน)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-200">
+                                    <td class="p-4 font-bold text-[#073B4C]">EP (English Program)</td>
+                                    <td class="p-4 text-center">2</td>
+                                    <td class="p-4 text-center">30</td>
+                                    <td class="p-4 text-center font-bold">60</td>
+                                </tr>
+                                <tr class="border-b border-slate-200 bg-[#F8F8FF]">
+                                    <td class="p-4 font-bold text-[#073B4C]">SMTE</td>
+                                    <td class="p-4 text-center">1</td>
+                                    <td class="p-4 text-center">30</td>
+                                    <td class="p-4 text-center font-bold">30</td>
+                                </tr>
+                                <tr class="border-b border-slate-200">
+                                    <td class="p-4 font-bold text-[#073B4C]">Gifted Math</td>
+                                    <td class="p-4 text-center">2</td>
+                                    <td class="p-4 text-center">36</td>
+                                    <td class="p-4 text-center font-bold">72</td>
+                                </tr>
+                                <tr class="bg-[#F8F8FF]">
+                                    <td class="p-4 font-bold text-[#073B4C]">ปกติ (ทั่วไป)</td>
+                                    <td class="p-4 text-center">9</td>
+                                    <td class="p-4 text-center">40</td>
+                                    <td class="p-4 text-center font-bold">360</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                 <tr class="bg-[#073B4C] text-white font-bold">
+                                    <td class="p-4 rounded-bl-lg" colspan="3">รวมทั้งสิ้น</td>
+                                    <td class="p-4 text-center rounded-br-lg">522</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </article>
+            </main>
+            
+            <footer class="mt-12 text-center text-gray-500 text-sm">
+                <p><b>จัดทำโดย:</b> ลุ้นสอวอไปด้วยกันนะ</p>
+                <p><b>ติดต่อ:</b> 💖 Line OPC : ครอบครัวยอดนารี💖สตรีวิทยา</p>
+                <a href="https://shorturl.asia/BlJVn" target="_blank" class="text-blue-500 underline hover:text-blue-700 transition-all duration-300">https://shorturl.asia/BlJVn</a>
+            </footer>
+        </div>
+
+        <!-- Main Tab Content - รายละเอียดหลักสูตร -->
+        <div id="details" class="tab-content card">
+            <header class="text-center mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-[#118AB2] mb-2">รายละเอียดหลักสูตร</h2>
+                <p class="text-center text-slate-600">จุดเด่นและข้อควรพิจารณาในแต่ละหลักสูตร</p>
+            </header>
+
+            <!-- Sub-Tab Navigation -->
+            <div class="flex flex-wrap justify-center bg-gray-100 rounded-lg p-1 mb-8">
+                <button class="sub-tab-button active flex-1 py-2 px-4 text-center text-base md:text-lg font-semibold text-gray-600 hover:bg-white transition-all duration-300 rounded-md focus:outline-none" data-sub-tab="ep">EP</button>
+                <button class="sub-tab-button flex-1 py-2 px-4 text-center text-base md:text-lg font-semibold text-gray-600 hover:bg-white transition-all duration-300 rounded-md focus:outline-none" data-sub-tab="gifted-math">Gifted Math</button>
+                <button class="sub-tab-button flex-1 py-2 px-4 text-center text-base md:text-lg font-semibold text-gray-600 hover:bg-white transition-all duration-300 rounded-md focus:outline-none" data-sub-tab="smte">SMTE</button>
+                <button class="sub-tab-button flex-1 py-2 px-4 text-center text-base md:text-lg font-semibold text-gray-600 hover:bg-white transition-all duration-300 rounded-md focus:outline-none" data-sub-tab="regular">ห้องปกติ</button>
+            </div>
+
+            <!-- Sub-Tab Content Containers -->
+            <div id="ep" class="sub-tab-content active">
+                <h2 class="text-3xl font-bold text-purple-700 text-center mb-6">จุดเด่นของหลักสูตร EP ✨</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📚</span><h3 class="text-lg font-semibold text-purple-800 mb-2">เรียนวิชาหลักเป็นภาษาอังกฤษ</h3><p class="text-base text-gray-700">วิชาคณิตศาสตร์ วิทยาศาสตร์ และวิชาหลักๆ จะสอนเป็นภาษาอังกฤษ ทำให้นักเรียนคุ้นเคยกับศัพท์วิชาการ</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🗣️</span><h3 class="text-lg font-semibold text-purple-800 mb-2">ครูต่างชาติ (Native Speaker)</h3><p class="text-base text-gray-700">ได้เรียนกับครูเจ้าของภาษาที่มาช่วยสอน ทำให้พัฒนาการฟัง-พูดภาษาอังกฤษเป็นธรรมชาติและมั่นใจ</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🌐</span><h3 class="text-lg font-semibold text-purple-800 mb-2">สิ่งแวดล้อมการเรียนรู้แบบสองภาษา</h3><p class="text-base text-gray-700">นักเรียนจะได้ฝึกใช้ภาษาอังกฤษทั้งในและนอกห้องเรียน มีเพื่อนที่สนใจและพร้อมพัฒนาภาษาไปด้วยกัน</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🏅</span><h3 class="text-lg font-semibold text-purple-800 mb-2">โอกาสแข่งขัน/แลกเปลี่ยน</h3><p class="text-base text-gray-700">มีโอกาสเข้าร่วมแข่งขันทักษะภาษาอังกฤษระดับประเทศและนานาชาติ รวมถึงโครงการแลกเปลี่ยนนักเรียน</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🎓</span><h3 class="text-lg font-semibold text-purple-800 mb-2">ต่อยอดการเรียนต่อ</h3><p class="text-base text-gray-700">ปูพื้นฐานภาษาอังกฤษที่แข็งแรงสำหรับการสอบเข้า ม.ปลาย, หรือการเรียนต่อในหลักสูตรนานาชาติในมหาวิทยาลัย</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🗺️</span><h3 class="text-lg font-semibold text-purple-800 mb-2">กิจกรรมและโครงการเสริม</h3><p class="text-base text-gray-700">มีค่ายวิชาการ, Summer Abroad, โครงการ Junior Researcher และคอร์สเตรียมสอบ IELTS/SAT</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🏫</span><h3 class="text-lg font-semibold text-purple-800 mb-2">อาคารเรียน</h3><p class="text-base text-gray-700">มีอาคารเรียนสำหรับหลักสูตร EP โดยเฉพาะ</p></div>
+                </div>
+                <h2 class="text-3xl font-bold text-red-700 text-center mb-6 mt-8">ข้อควรพิจารณา ⚠️</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">💬</span><h3 class="text-lg font-semibold text-red-800 mb-2">ความพร้อมด้านภาษา</h3><p class="text-base text-gray-700">หากนักเรียนยังไม่มีพื้นฐานที่ดีพอ อาจต้องใช้เวลาปรับตัวมากขึ้น</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">💰</span><h3 class="text-lg font-semibold text-red-800 mb-2">ค่าใช้จ่าย</h3><p class="text-base text-gray-700">หลักสูตร EP มีค่าใช้จ่ายสูงกว่าหลักสูตรปกติ รวมถึงค่าใช้จ่ายแรกเข้า 50,000 บาท</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📝</span><h3 class="text-lg font-semibold text-red-800 mb-2">การสอบเข้า</h3><p class="text-base text-gray-700">มีการสอบสัมภาษณ์เป็นภาษาอังกฤษ ซึ่งต้องมีการเตรียมตัวเป็นพิเศษ</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🇹🇭</span><h3 class="text-lg font-semibold text-red-800 mb-2">การเรียนภาษาไทย</h3><p class="text-base text-gray-700">บางวิชาจะยังคงเรียนเป็นภาษาไทยตามหลักสูตรแกนกลาง</p></div>
+                </div>
+            </div>
+
+            <div id="gifted-math" class="sub-tab-content">
+                <h2 class="text-3xl font-bold text-green-600 text-center mb-6">ข้อดีของหลักสูตร Gifted Math ✅</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-green-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🧠</span><h3 class="text-lg font-semibold text-green-800 mb-2">เนื้อหาที่เข้มข้นและล้ำหน้า</h3><p class="text-base text-gray-700">มุ่งเน้นการสอนคณิตศาสตร์เชิงลึกและครอบคลุมเนื้อหาที่ยากกว่า เพื่อเตรียมความพร้อมให้นักเรียนสำหรับการแข่งขันทางวิชาการและสนามสอบสำคัญต่างๆ</p></div>
+                    <div class="bg-green-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🏆</span><h3 class="text-lg font-semibold text-green-800 mb-2">โอกาสในการแข่งขันทางวิชาการ</h3><p class="text-base text-gray-700">นักเรียนจะได้รับการสนับสนุนและฝึกฝนเป็นพิเศษเพื่อเข้าร่วมการแข่งขันระดับต่างๆ เช่น โอลิมปิกวิชาการ</p></div>
+                    <div class="bg-green-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📚</span><h3 class="text-lg font-semibold text-green-800 mb-2">โอกาสในการเข้าร่วมค่ายวิชาการ</h3><p class="text-base text-gray-700">นักเรียนจะได้รับโอกาสเข้าร่วมค่ายต่างๆ เช่น เข้าค่ายดาวรุ่งมุ่งสู่ฝัน และค่ายวิทย์ เพื่อเสริมทักษะและความรู้เพิ่มเติม</p></div>
+                    <div class="bg-green-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🤝</span><h3 class="text-lg font-semibold text-green-800 mb-2">สภาพแวดล้อมที่เอื้อต่อการเรียนรู้</h3><p class="text-base text-gray-700">การเรียนกับเพื่อนร่วมชั้นที่มีความสนใจและทักษะใกล้เคียงกัน ช่วยสร้างบรรยากาศที่ส่งเสริมการเรียนรู้</p></div>
+                    <div class="bg-green-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🛣️</span><h3 class="text-lg font-semibold text-green-800 mb-2">การปูทางสู่การศึกษาต่อ</h3><p class="text-base text-gray-700">ช่วยให้นักเรียนมีพื้นฐานที่แข็งแกร่งสำหรับการศึกษาต่อในระดับชั้นที่สูงขึ้น ทั้งในหลักสูตร Gifted Math ม.ปลาย</p></div>
+                </div>
+                <h2 class="text-3xl font-bold text-red-600 text-center mb-6 mt-8">ข้อควรพิจารณา ⚠️</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🤯</span><h3 class="text-lg font-bold text-red-800 mb-2">ความกดดันและความเครียด</h3><p class="text-base text-gray-700">การแข่งขันที่สูงและปริมาณการบ้านที่เพิ่มขึ้นอาจทำให้นักเรียนรู้สึกกดดัน ซึ่งอาจส่งผลกระทบต่อสุขภาพจิต</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">⚡</span><h3 class="text-lg font-bold text-red-800 mb-2">ความรวดเร็วในการเรียน</h3><p class="text-base text-gray-700">การเรียนรู้ที่รวดเร็วและเนื้อหาที่ซับซ้อน อาจทำให้นักเรียนบางคนตามไม่ทัน หากไม่มีการทบทวนอย่างสม่ำเสมอ</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">⚖️</span><h3 class="text-lg font-bold text-red-800 mb-2">การเสียสมดุลด้านอื่นๆ</h3><p class="text-base text-gray-700">การทุ่มเทเวลาให้กับการเรียนคณิตศาสตร์อย่างมากอาจทำให้มีเวลาสำหรับกิจกรรมนอกหลักสูตรน้อยลง</p></div>
+                </div>
+            </div>
+
+            <div id="smte" class="sub-tab-content">
+                <h2 class="text-3xl font-bold text-purple-700 text-center mb-6">จุดเด่นของหลักสูตร SMTE ✨</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🔬</span><h3 class="text-lg font-semibold text-purple-800 mb-2">เน้นการเรียนรู้เชิงลึก</h3><p class="text-base text-gray-700">ด้านวิทยาศาสตร์ คณิตศาสตร์ เทคโนโลยี และสิ่งแวดล้อม ภายใต้การดูแลของ สสวท.</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🧪</span><h3 class="text-lg font-semibold text-purple-800 mb-2">การเรียนรู้เชิงปฏิบัติ</h3><p class="text-base text-gray-700">ส่งเสริมการเรียนรู้ผ่านการทดลองในห้องปฏิบัติการและโครงงาน STEM</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">💡</span><h3 class="text-lg font-semibold text-purple-800 mb-2">พัฒนาทักษะการคิด</h3><p class="text-base text-gray-700">พัฒนาทักษะการคิดวิเคราะห์ การแก้ปัญหา และการทำงานเป็นทีม</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🗺️</span><h3 class="text-lg font-semibold text-purple-800 mb-2">กิจกรรมพิเศษ</h3><p class="text-base text-gray-700">มีโอกาสเข้าร่วมค่าย SMTE, ค่ายวิทย์ หรือทัศนศึกษาในสถาบันวิจัยต่างๆ</p></div>
+                    <div class="bg-purple-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🗣️</span><h3 class="text-lg font-semibold text-purple-800 mb-2">วิชาภาษาอังกฤษ</h3><p class="text-base text-gray-700">เรียนหลักสูตรภาษาอังกฤษ (Gifted) และสอนโดยครูเจ้าของภาษาเพื่อพัฒนาทักษะภาษาอังกฤษ</p></div>
+                </div>
+                <h2 class="text-3xl font-bold text-red-700 text-center mb-6 mt-8">ข้อควรพิจารณา ⚠️</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">💪</span><h3 class="text-lg font-semibold text-red-800 mb-2">ภาระงานหนัก</h3><p class="text-base text-gray-700">เนื้อหายากและมีการบ้าน/โครงงานจำนวนมาก ต้องใช้เวลาเรียนรู้และชอบการทำโครงงาน</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🏆</span><h3 class="text-lg font-semibold text-red-800 mb-2">การแข่งขันสูง</h3><p class="text-base text-gray-700">การเรียนและกิจกรรมมีการแข่งขันสูง ซึ่งอาจสร้างความเครียดได้</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">⏳</span><h3 class="text-lg font-semibold text-red-800 mb-2">เวลาส่วนตัวน้อยลง</h3><p class="text-base text-gray-700">เพราะต้องทุ่มเทเวลาให้กับการเรียนและโครงงานจำนวนมาก</p></div>
+                </div>
+            </div>
+
+            <div id="regular" class="sub-tab-content">
+                <h2 class="text-3xl font-bold text-teal-700 text-center mb-6">ข้อดีของหลักสูตรห้องปกติ ✅</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-teal-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📚</span><h3 class="text-xl font-semibold text-teal-800 mb-2">การเรียนการสอนคุณภาพสูง</h3><p class="text-base text-gray-700">มีชื่อเสียงด้านการศึกษา โดยเฉพาะวิชาหลักอย่างวิทยาศาสตร์ คณิตศาสตร์ และภาษาอังกฤษ</p></div>
+                    <div class="bg-teal-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🤸</span><h3 class="text-xl font-semibold text-teal-800 mb-2">กิจกรรมเสริมทักษะ</h3><p class="text-base text-gray-700">มีกิจกรรมหลากหลาย เช่น กิจกรรมสัปดาห์วิทยาศาสตร์ กิจกรรมตอบปัญหาสังคม และกิจกรรมเพื่อสังคมอื่น ๆ</p></div>
+                    <div class="bg-teal-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🤝</span><h3 class="text-xl font-semibold text-teal-800 mb-2">สังคมการเรียนรู้ที่ดี</h3><p class="text-base text-gray-700">นักเรียนมีสังคมที่เป็นมิตรและสนับสนุนกัน ไม่เน้นการแข่งขันสูงเกินไป</p></div>
+                    <div class="bg-teal-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">💰</span><h3 class="text-xl font-semibold text-teal-800 mb-2">ค่าใช้จ่ายที่เหมาะสม</h3><p class="text-base text-gray-700">ค่าเทอมอยู่ในระดับที่เหมาะสมเมื่อเทียบกับคุณภาพการศึกษาที่ได้รับ</p></div>
+                </div>
+                <h2 class="text-3xl font-bold text-red-700 text-center mb-6 mt-8">ข้อควรระวัง ⚠️</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📉</span><h3 class="text-xl font-semibold text-red-800 mb-2">ความเข้มข้นน้อยกว่า</h3><p class="text-base text-gray-700">เนื้อหาการเรียนอาจไม่เข้มข้นเท่าห้องพิเศษ ซึ่งอาจส่งผลต่อการเตรียมตัวสำหรับการศึกษาต่อในระดับที่สูงขึ้น</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">🏆</span><h3 class="text-xl font-semibold text-red-800 mb-2">การแข่งขันวิชาการน้อยกว่า</h3><p class="text-base text-gray-700">หากต้องการเตรียมตัวสำหรับการแข่งขันทางวิชาการระดับสูง ห้องพิเศษอาจเป็นตัวเลือกที่เหมาะสมกว่า</p></div>
+                    <div class="bg-red-100 rounded-2xl p-6 shadow-md flex flex-col items-center text-center"><span class="text-4xl mb-4">📝</span><h3 class="text-xl font-semibold text-red-800 mb-2">เกณฑ์การคัดเลือก</h3><p class="text-base text-gray-700">การเข้าศึกษาต่อในชั้น ม.4 มีเกณฑ์คัดเลือกที่เข้มงวดจากผลการเรียน</p></div>
+                </div>
+            </div>
+
+            <!-- Shared Footer for Details Tab -->
+            <footer class="mt-12 text-center text-gray-500 text-sm">
+                <p><b>จัดทำโดย:</b> ลุ้นสอวอไปด้วยกันนะ</p>
+                <p><b>ติดต่อ:</b> 💖 Line OPC : ครอบครัวยอดนารี💖สตรีวิทยา</p>
+                <a href="https://shorturl.asia/BlJVn" target="_blank" class="text-blue-500 underline hover:text-blue-700 transition-all duration-300">https://shorturl.asia/BlJVn</a>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const chartData = {
+            labels: ['EP (English Program)', 'SMTE', 'Gifted Math', 'ปกติ (ทั่วไป)'],
+            values: [60, 30, 72, 360]
+        };
+
+        const normalProgramData = {
+            labels: ['นอกเขต', 'ในเขต', 'ความสามารถพิเศษ', 'เงื่อนไขพิเศษ'],
+            values: [265, 30, 20, 45]
+        };
+
+        const chartColors = ['#FF6B6B', '#FFD166', '#06D6A0', '#118AB2'];
+
+        function wrapLabel(label, maxWidth) {
+            if (label.length <= maxWidth) {
+                return label;
+            }
+            const words = label.split(' ');
+            let lines = [];
+            let currentLine = '';
+            words.forEach(word => {
+                if ((currentLine + ' ' + word).trim().length > maxWidth) {
+                    lines.push(currentLine.trim());
+                    currentLine = word;
+                } else {
+                    currentLine = (currentLine + ' ' + word).trim();
+                }
+            });
+            if (currentLine) {
+                lines.push(currentLine.trim());
+            }
+            return lines;
+        }
+        
+        const processedLabels = chartData.labels.map(label => wrapLabel(label, 16));
+        const processedNormalLabels = normalProgramData.labels.map(label => wrapLabel(label, 16));
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const commonChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: {
+                            family: "'Sarabun', sans-serif",
+                            size: 14,
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    },
+                    titleFont: { family: "'Sarabun', sans-serif", size: 16 },
+                    bodyFont: { family: "'Sarabun', sans-serif", size: 14 },
+                }
+            }
+        };
+
+        const chartInstances = {};
+
+        function initCharts() {
+            // Check if canvas elements exist before creating charts
+            const distributionCanvas = document.getElementById('programDistributionChart');
+            if (distributionCanvas) {
+                const distributionCtx = distributionCanvas.getContext('2d');
+                chartInstances.distribution = new Chart(distributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: processedLabels,
+                        datasets: [{
+                            label: 'จำนวนนักเรียน',
+                            data: chartData.values,
+                            backgroundColor: chartColors,
+                            borderColor: '#FFFFFF',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: { ...commonChartOptions, cutout: '60%' }
+                });
+            }
+
+            const comparisonCanvas = document.getElementById('programComparisonChart');
+            if(comparisonCanvas) {
+                const comparisonCtx = comparisonCanvas.getContext('2d');
+                chartInstances.comparison = new Chart(comparisonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: processedLabels,
+                        datasets: [{
+                            label: 'จำนวนนักเรียน',
+                            data: chartData.values,
+                            backgroundColor: chartColors,
+                            borderColor: chartColors.map(color => color + 'CC'),
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: { ...commonChartOptions, scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { font: { family: "'Sarabun', sans-serif" } } }, x: { grid: { display: false }, ticks: { font: { family: "'Sarabun', sans-serif", size: 12 } } } } }
+                });
+            }
+
+            const normalBreakdownCanvas = document.getElementById('normalProgramBreakdownChart');
+            if(normalBreakdownCanvas) {
+                const normalBreakdownCtx = normalBreakdownCanvas.getContext('2d');
+                chartInstances.normalBreakdown = new Chart(normalBreakdownCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: processedNormalLabels,
+                        datasets: [{
+                            label: 'จำนวนนักเรียน',
+                            data: normalProgramData.values,
+                            backgroundColor: chartColors,
+                            borderColor: '#FFFFFF',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: { ...commonChartOptions, cutout: '60%' }
+                });
+            }
+        }
+
+        function destroyCharts() {
+            for (const chartName in chartInstances) {
+                if (chartInstances[chartName]) {
+                    chartInstances[chartName].destroy();
+                    chartInstances[chartName] = null;
+                }
+            }
+        }
+        
+        // Main Tab Switching Logic
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                const activeTabContent = document.getElementById(tabId);
+                if(activeTabContent) activeTabContent.classList.add('active');
+                
+                destroyCharts(); // Always destroy charts on tab switch
+                if (tabId === 'overview') {
+                    initCharts(); // Re-initialize charts only for the overview tab
+                }
+            });
+        });
+
+        // Sub-Tab Switching Logic
+        document.querySelectorAll('.sub-tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-sub-tab');
+
+                document.querySelectorAll('.sub-tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                document.querySelectorAll('.sub-tab-content').forEach(content => content.classList.remove('active'));
+                const activeSubTabContent = document.getElementById(tabId);
+                if(activeSubTabContent) activeSubTabContent.classList.add('active');
+            });
+        });
+
+        // Initial chart rendering
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('overview').classList.contains('active')) {
+                initCharts();
+            }
+            const initialActiveSubTab = document.querySelector('.sub-tab-button.active');
+            if (initialActiveSubTab) {
+                const subTabId = initialActiveSubTab.getAttribute('data-sub-tab');
+                const subTabContent = document.getElementById(subTabId);
+                if(subTabContent) subTabContent.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
+
